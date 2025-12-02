@@ -26,6 +26,51 @@ export default function ProductPage() {
 		)
 	}
 
+	useEffect(() => {
+		const cookies = Object.fromEntries(
+			document.cookie.split("; ").map((c) => c.split("="))
+		);
+
+		if (cookies.purr === "true") {
+			const btn = document.querySelector("[data-auto]");
+
+			if (btn) {
+				const scrollToElement = (el, duration = 1200) => {
+					const targetY = el.getBoundingClientRect().top + window.scrollY;
+					const startY = window.scrollY;
+					const startTime = performance.now();
+
+					const animateScroll = (now) => {
+						const elapsed = now - startTime;
+						const progress = Math.min(elapsed / duration, 1);
+						const ease =
+							progress < 0.5
+								? 2 * progress * progress
+								: -1 + (4 - 2 * progress) * progress;
+
+						window.scrollTo(0, startY + (targetY - startY) * ease);
+
+						if (progress < 1) {
+							requestAnimationFrame(animateScroll);
+						}
+					};
+
+					requestAnimationFrame(animateScroll);
+				};
+
+				scrollToElement(btn, 1000);
+
+				const delay = Math.floor(Math.random() * 1001);
+				setTimeout(() => {
+					btn.click();
+				}, delay);
+			}
+
+			document.cookie =
+				"purr=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+		}
+	}, []);
+
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
 			<div className="container mx-auto px-4 py-12">
